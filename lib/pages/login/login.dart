@@ -1,9 +1,14 @@
+import 'package:app_flutter_cocom/pages/home/home_page.dart';
+import 'package:app_flutter_cocom/shared/shared.dart';
 import 'package:app_flutter_cocom/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+
+import '../../controller/user_controller.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -14,7 +19,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   // ignore: prefer_final_fields
-  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   double _padding = 0.0;
@@ -46,11 +51,11 @@ class _LoginPageState extends State<LoginPage> {
           padding: const EdgeInsets.symmetric(horizontal: 18),
           // ignore: prefer_const_literals_to_create_immutables
           child: TextField(
-            controller: _usernameController,
+            controller: _emailController,
             autocorrect: false,
             style: blackTextUtama.copyWith(fontSize: 14, fontWeight: bold),
             decoration: InputDecoration(
-                hintText: 'Username',
+                hintText: 'Email',
                 hintStyle: blackTextUtamaTransparan.copyWith(
                     fontSize: 14, fontWeight: bold),
                 border: InputBorder.none,
@@ -92,17 +97,18 @@ class _LoginPageState extends State<LoginPage> {
       return Container(
         height: 45,
         child: GestureDetector(
-          onTap: () {},
-          onTapDown: (_) => setState(() {
-            _padding = 2.0;
-            // _click = 1.0;
-          }),
-          onTapUp: (_) => setState(() {
-            _padding = 0.0;
-            // _click = 0.0;
-          }),
+          onTap: ()async {
+            //  Get.offAll(()=>const HomePage(),);
+            if (!(_emailController.text.trim() != '' &&
+                _passwordController.text.trim() != '')) {
+                  snackbarCustom(typeSnackbar: TypeSnackbar.info, message: "Harap untuk mengisi usernam");
+            } else {
+              await UserController().login(email: _emailController.text, password: _passwordController.text);
+
+            }
+          },
           child: AnimatedContainer(
-            margin: EdgeInsets.symmetric(horizontal: 41),
+            margin: const EdgeInsets.symmetric(horizontal: 41),
             padding: EdgeInsets.all(_padding),
             duration: const Duration(milliseconds: 100),
             child: Container(

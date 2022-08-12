@@ -1,37 +1,48 @@
+import 'package:app_flutter_cocom/controller/penduduk_controller.dart';
+import 'package:app_flutter_cocom/extensions/extensions.dart';
 import 'package:app_flutter_cocom/pages/akun/akun_page.dart';
-import 'package:app_flutter_cocom/pages/assessment/assesment5_page.dart';
-import 'package:app_flutter_cocom/pages/assessment/assessment2_page.dart';
-import 'package:app_flutter_cocom/pages/assessment/assessment3_page.dart';
-import 'package:app_flutter_cocom/pages/assessment/assessment4_page.dart';
-import 'package:app_flutter_cocom/pages/assessment/assessment_lokasi_page.dart';
-import 'package:app_flutter_cocom/pages/assessment/assessment_page.dart';
+import 'package:app_flutter_cocom/pages/assessment/confirm_location/bindings/select_location_binding.dart';
+import 'package:app_flutter_cocom/pages/assessment/confirm_location/views/select_location_view.dart';
 import 'package:app_flutter_cocom/pages/data_survey/survey_page.dart';
+import 'package:app_flutter_cocom/shared/shared.dart';
 import 'package:app_flutter_cocom/theme.dart';
+import 'package:app_flutter_cocom/widgets/widgets.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
-class Home_Page extends StatefulWidget {
-  const Home_Page({Key? key}) : super(key: key);
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<Home_Page> createState() => _Home_PageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _Home_PageState extends State<Home_Page> {
+class _HomePageState extends State<HomePage> {
   int pageIndex = 0;
-
+  final pendudukController = Get.put(PendudukController());
   final pages = [
-    const Home_Select(),
+    const HomeSelect(),
     const Akun_Page(),
   ];
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    pendudukController.getInitData();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kBackgroun,
-      body: pages[pageIndex],
+      backgroundColor: whiteColor,
+      body: pendudukController.obxCustom(
+        (state) => pages[pageIndex],
+        onRefreshData: () {
+          pendudukController.getInitData();
+        },
+      ),
       bottomNavigationBar: buildMyNavBar(context),
     );
   }
@@ -86,8 +97,10 @@ class _Home_PageState extends State<Home_Page> {
               iconSize: 40,
               enableFeedback: false,
               onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => Assessment_Lokasi_Page()));
+                Get.to(
+                  () => SelectLocationView(),
+                  binding: SelectLocationBinding(),
+                );
               },
               icon: Container(
                 width: 41,
@@ -107,7 +120,10 @@ class _Home_PageState extends State<Home_Page> {
               enableFeedback: false,
               onPressed: () {
                 Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => Survey_page()));
+                  MaterialPageRoute(
+                    builder: (context) => Survey_page(),
+                  ),
+                );
               },
               icon: Container(
                 width: 41,
@@ -164,16 +180,17 @@ class _Home_PageState extends State<Home_Page> {
   }
 }
 
-class Home_Select extends StatefulWidget {
-  const Home_Select({Key? key}) : super(key: key);
+class HomeSelect extends StatefulWidget {
+  const HomeSelect({Key? key}) : super(key: key);
 
   @override
-  State<Home_Select> createState() => _Home_SelectState();
+  State<HomeSelect> createState() => _HomeSelectState();
 }
 
-class _Home_SelectState extends State<Home_Select> {
+class _HomeSelectState extends State<HomeSelect> {
   int _current = 0;
   final CarouselController _controller = CarouselController();
+  final pendudukController = Get.find<PendudukController>();
 
   List<String> imgList = [
     'https://assets.pikiran-rakyat.com/crop/0x4:750x420/x/photo/2021/11/18/3325698051.png',
@@ -185,11 +202,11 @@ class _Home_SelectState extends State<Home_Select> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackgroun2,
-      body: Column(
+      body: ListView(
         children: [
           Container(
-            padding: EdgeInsets.only(top: 30),
-            height: 102,
+            padding: EdgeInsets.only(top: 10),
+            height: 80,
             width: double.infinity,
             color: kPrimaryColor,
             child: Row(
@@ -259,12 +276,107 @@ class _Home_SelectState extends State<Home_Select> {
               },
             ).toList(),
           ),
-          Expanded(
-            flex: 1,
-            child: Container(
-              color: kBackgroun,
+          const SizedBox(
+            height: 20,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: defaultMargin),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                        color: whiteColor,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Center(
+                      child: Column(
+                        children: [
+                          Text(
+                            "Sudah Assesment",
+                            style: greyTextFont,
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Obx(
+                            () => Text(
+                              "${pendudukController.listSudahAssesment.length}",
+                              style:
+                                  blackTextFontBigBold.copyWith(fontSize: 20),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            "warga",
+                            style: greyTextFont,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  width: 20,
+                ),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                        color: whiteColor,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Center(
+                      child: Column(
+                        children: [
+                          Text(
+                            "Belum Assesment",
+                            style: greyTextFont,
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Obx(
+                            () => Text(
+                              "${pendudukController.listBelumAssesment.length}",
+                              style:
+                                  blackTextFontBigBold.copyWith(fontSize: 20),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            "warga",
+                            style: greyTextFont,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          )
+          ),
+          const SizedBox(
+            height: 30,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: defaultMargin),
+            child: CustomButtonWidget(
+              title: "Mulai Assessment",
+              onTap: () {
+                Get.to(
+                  () => SelectLocationView(),
+                  binding: SelectLocationBinding(),
+                );
+              },
+            ),
+          ),
+          Container(
+            color: kBackgroun,
+          ),
         ],
       ),
     );

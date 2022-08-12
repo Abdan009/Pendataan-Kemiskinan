@@ -1,7 +1,13 @@
+import 'package:app_flutter_cocom/controller/penduduk_controller.dart';
+import 'package:app_flutter_cocom/models/penduduk.dart';
+import 'package:app_flutter_cocom/pages/assessment/detail_people_page.dart';
+import 'package:app_flutter_cocom/shared/shared.dart';
 import 'package:app_flutter_cocom/theme.dart';
+import 'package:app_flutter_cocom/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:get/get.dart';
 
 class Survey_page extends StatefulWidget {
   const Survey_page({Key? key}) : super(key: key);
@@ -12,15 +18,39 @@ class Survey_page extends StatefulWidget {
 
 class _Survey_pageState extends State<Survey_page> {
   final _searchController = TextEditingController();
+  final pendudukController = Get.find<PendudukController>();
+  var listPenduduk = List<Penduduk>.empty();
+  @override
+  void initState() {
+    super.initState();
+    listPenduduk = pendudukController.listSudahAssesment;
+  }
+
+  void search(String? value) {
+    if (value != null) {
+      listPenduduk = pendudukController.listSudahAssesment
+          .where(
+            (p0) => p0.nama!.toLowerCase().contains(
+                  value.toLowerCase(),
+                ),
+          )
+          .toList();
+    }else{
+       listPenduduk = pendudukController.listSudahAssesment;
+    }
+    setState(() {
+      
+    });
+  }
 
   Widget _searching() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       width: double.infinity,
       height: 70,
       child: Center(
         child: Container(
-          padding: EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             horizontal: 14,
           ),
           width: double.infinity,
@@ -38,71 +68,18 @@ class _Survey_pageState extends State<Survey_page> {
               fontSize: 15,
               fontWeight: regular,
             ),
+            onChanged: (value){
+              search(value);
+            },
             decoration: InputDecoration(
               hintText: 'Searching',
               hintStyle:
                   grey2TextBody.copyWith(fontSize: 15, fontWeight: regular),
               border: InputBorder.none,
-              suffixIcon: Icon(
+              suffixIcon: const Icon(
                 Icons.search,
               ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget bList() {
-    return Container(
-      margin: EdgeInsets.only(bottom: 8),
-      width: double.infinity,
-      height: 60,
-      decoration: BoxDecoration(
-        color: kBackgroun,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.7),
-            spreadRadius: 2,
-            blurRadius: 2,
-            offset: Offset(0, 3), // changes position of shadow
-          ),
-        ],
-      ),
-      child: TextButton(
-        onPressed: () {},
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 18),
-          child: Row(
-            children: [
-              Text(
-                'Cocom',
-                style: blueTextBody.copyWith(
-                  fontSize: 14,
-                  fontWeight: regular,
-                ),
-              ),
-              Spacer(),
-              GestureDetector(
-                onTap: () {},
-                child: Image(
-                  image: AssetImage('assets/tong_sampah.png'),
-                  width: 20,
-                  height: 20,
-                ),
-              ),
-              const SizedBox(
-                width: 16,
-              ),
-              GestureDetector(
-                onTap: () {},
-                child: Image(
-                  image: AssetImage('assets/edit.png'),
-                  width: 20,
-                  height: 20,
-                ),
-              ),
-            ],
           ),
         ),
       ),
@@ -118,7 +95,7 @@ class _Survey_pageState extends State<Survey_page> {
             onPressed: () {
               Navigator.pop(context);
             },
-            icon: Icon(
+            icon: const Icon(
               Icons.keyboard_arrow_left_rounded,
               size: 40,
             ),
@@ -129,13 +106,43 @@ class _Survey_pageState extends State<Survey_page> {
         body: ListView(
           children: [
             _searching(),
-            bList(),
-            bList(),
-            bList(),
-            bList(),
-            bList(),
-            bList(),
-            bList(),
+         (listPenduduk.isEmpty)?const DataNotFoundWidget():   Padding(
+              padding: const EdgeInsets.symmetric(horizontal: defaultMargin),
+              child: Column(
+                children: List.generate(listPenduduk.length, (index) {
+                  Penduduk penduduk = listPenduduk[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Get.to(DetailPeoplePage(penduduk: penduduk));
+                    },
+                    child: Container(
+                      width: Get.width,
+                      padding: const EdgeInsets.all(10),
+                      margin: const EdgeInsets.only(bottom: 10),
+                      decoration: BoxDecoration(
+                          color: whiteColor,
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "${penduduk.nama}",
+                            style: blackTextFontTitleBold,
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            "${penduduk.alamatLengkap}",
+                            style: blackTextFont,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            )
           ],
         ));
   }

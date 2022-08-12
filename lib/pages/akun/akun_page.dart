@@ -1,7 +1,9 @@
+import 'package:app_flutter_cocom/controller/user_controller.dart';
 import 'package:app_flutter_cocom/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:get/get.dart';
 
 class Akun_Page extends StatefulWidget {
   const Akun_Page({Key? key}) : super(key: key);
@@ -14,6 +16,8 @@ class _Akun_PageState extends State<Akun_Page> {
   double _padding = 18.0;
   double _padding2 = 18.0;
   double _fontSize = 18.0;
+
+  var userController = Get.find<UserController>();
 
   Widget boxKetUser() {
     return Container(
@@ -164,7 +168,9 @@ class _Akun_PageState extends State<Akun_Page> {
 
   Widget bLogOut() {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        userController.logout();
+      },
       onTapDown: (_) => setState(() {
         _fontSize = 17.0;
       }),
