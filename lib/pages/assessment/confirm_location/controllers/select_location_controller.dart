@@ -9,7 +9,7 @@ import '../../../../shared/shared.dart';
 
 //Argumen: initialLocation
 class SelectLocationController extends GetxController {
-  var initialLocation = LatLng(-6.175441, 106.827008).obs;
+  var initialLocation =const LatLng(-6.175441, 106.827008).obs;
 
   late GoogleMapController controllerMap;
 
@@ -21,6 +21,7 @@ class SelectLocationController extends GetxController {
   var isAddressLoading = false.obs;
   String postalCode = "";
   var searchText = "Cari Alamat".obs;
+  var isSync = false.obs;
 
   @override
   void onInit() {
@@ -31,11 +32,11 @@ class SelectLocationController extends GetxController {
             cameraPositionCustom(Get.arguments['initialLocation']);
       } else {
         currentLocation.value =
-            cameraPositionCustom(LatLng(-6.175441, 106.827008));
+            cameraPositionCustom(const LatLng(-6.175441, 106.827008));
       }
     } else {
       currentLocation.value =
-          cameraPositionCustom(LatLng(-6.175441, 106.827008));
+          cameraPositionCustom(const LatLng(-6.175441, 106.827008));
     }
     // setCustomMapPin();
   }
@@ -112,6 +113,7 @@ class SelectLocationController extends GetxController {
       isAddressLoading.value = false;
     }
     isAddressLoading.value = false;
+    isSync.value =false;
   }
 
   Future<void> getMyLocation() async {

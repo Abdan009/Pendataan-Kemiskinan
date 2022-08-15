@@ -48,8 +48,8 @@ class SelectLocationView extends GetView<SelectLocationController> {
                             },
                             onCameraMove: (CameraPosition cameraPosition) {
                               controller.currentLocation.value = cameraPosition;
-
-                              controller.searchAddress();
+                              // controller.searchAddress();
+                              controller.isSync.value = true;
                               controller.update();
                             },
                           ),
@@ -103,11 +103,13 @@ class SelectLocationView extends GetView<SelectLocationController> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        controller.fullAddressName.value,
-                                        style: blackTextBody.copyWith(
-                                          fontSize: 13,
-                                          fontWeight: bold,
+                                      Obx(
+                                        () => Text(
+                                          controller.fullAddressName.value,
+                                          style: blackTextBody.copyWith(
+                                            fontSize: 13,
+                                            fontWeight: bold,
+                                          ),
                                         ),
                                       ),
                                       // Text(
@@ -135,19 +137,27 @@ class SelectLocationView extends GetView<SelectLocationController> {
                             ),
                             child: InkWell(
                               onTap: () {
-                                Get.to(
-                                  () => ListPeoplePage(
-                                    currentLocation: controller
-                                        .currentLocation.value!.target,
-                                  ),
-                                );
+                                if (controller.isSync.value) {
+                                  controller.searchAddress();
+                                } else {
+                                  Get.to(
+                                    () => ListPeoplePage(
+                                      currentLocation: controller
+                                          .currentLocation.value!.target,
+                                    ),
+                                  );
+                                }
                               },
-                              child: Center(
-                                child: Text(
-                                  'Konfirmasi Lokasi Anda',
-                                  style: whiteTextBody.copyWith(
-                                    fontSize: 18,
-                                    fontWeight: bold,
+                              child: Obx(
+                                () => Center(
+                                  child: Text(
+                                    (controller.isSync.value)
+                                        ? "Refresh"
+                                        : 'Konfirmasi Lokasi Anda',
+                                    style: whiteTextBody.copyWith(
+                                      fontSize: 18,
+                                      fontWeight: bold,
+                                    ),
                                   ),
                                 ),
                               ),

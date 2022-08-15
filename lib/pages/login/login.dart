@@ -21,6 +21,7 @@ class _LoginPageState extends State<LoginPage> {
   // ignore: prefer_final_fields
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final userController = Get.find<UserController>();
 
   double _padding = 0.0;
   double _click = 0.0;
@@ -103,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
                 _passwordController.text.trim() != '')) {
                   snackbarCustom(typeSnackbar: TypeSnackbar.info, message: "Harap untuk mengisi usernam");
             } else {
-              await UserController().login(email: _emailController.text, password: _passwordController.text);
+              await userController.login(email: _emailController.text, password: _passwordController.text);
 
             }
           },
